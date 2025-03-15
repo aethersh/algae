@@ -42,15 +42,10 @@
             buildInputs = with pkgs; [
               openssl
               protobuf
-            ];
-            nativeBuildInputs = with pkgs; [
-              pkg-config
-              (rust-bin.selectLatestNightlyWith (
-                toolchain: toolchain.default.override { extensions = [ "rust-src" ]; }
-              ))
+              rust-bin.stable.latest.default
               rust-analyzer
             ];
-            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
+            # LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
           };
         }
       );
