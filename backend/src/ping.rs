@@ -121,6 +121,9 @@ pub async fn ping_handler(Json(input): Json<PingRequest>) -> impl IntoResponse {
         }
     }
 
+    // Stop the pinger
+    pinger.stop_pinger();
+
     // Return ping response
     PingResponse::make_ping_response(input.ip, ping_results);
 }
