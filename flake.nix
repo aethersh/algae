@@ -1,53 +1,50 @@
 {
-  description = "AetherNet Looking Glass";
+  description = "A declarative DNS server";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-25.05";
 
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
+    gomod2nix = {
+      url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs =
-    { nixpkgs, rust-overlay, ... }:
-    let
+  outputs = inputs @ {
+    flake-parts,
+    nixpkgs,
+    gomod2nix,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux"];
+      perSystem = {
+        pkgs,
+        system,
+        ...
+      }: rec  {
+        # packages = rec {
+        #   default = pkgs.callPackage ./tungsten.nix {
+        #     inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
+        #     inherit pkl-go;
+        #   };
+        #   tungsten = default;
+        #   pkl-go = pkgs.callPackage ./pkl-gen-go.nix {
+        #   };
+        # };
 
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-darwin"
-      ];
-
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import nixpkgs {
-              inherit system;
-              overlays = [ (import rust-overlay) ];
-            };
-            inherit system;
-          }
-        );
-    in
-
-    {
-
-      devShells = forEachSupportedSystem (
-        { pkgs, ... }:
-        {
-          default = pkgs.mkShell rec {
-            buildInputs = with pkgs; [
-              openssl
-              protobuf
-              rust-bin.stable.latest.default
-              rust-analyzer
-            ];
-            # LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
-          };
-        }
-      );
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            go
+            gopls
+            gotools
+            go-tools
+            gomod2nix.packages.${system}.default
+          ];
+        };
+        formatter = pkgs.alejandra;
+      };
     };
 }
