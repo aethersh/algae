@@ -51,6 +51,9 @@
           ];
 
           ALGAE_ALLOWED_ORIGINS = "http://localhost:2152";
+          ALGAE_DOMAIN = "as215207.net";
+          ALGAE_TEST_V6="2602:fbcf:df::1";
+          ALGAE_LOCATION = "New York City, NY, USA";
         };
         formatter = pkgs.alejandra;
       };
