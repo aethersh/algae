@@ -27,7 +27,7 @@
         system,
         ...
       }: rec  {
-        #      https://templ.guide/quick-start/installation#nix
+        # https://templ.guide/quick-start/installation#nix
         # packages = rec {
         #   default = pkgs.callPackage ./tungsten.nix {
         #     inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
@@ -47,7 +47,10 @@
             go-tools
             gomod2nix.packages.${system}.default
             templ.packages.${system}.templ
+            tailwindcss_4
           ];
+
+          ALGAE_ALLOWED_ORIGINS = "http://localhost:2152";
         };
         formatter = pkgs.alejandra;
       };
