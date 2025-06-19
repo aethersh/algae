@@ -19,7 +19,7 @@ func GenerateCORSConfig() (*cors.Config, error) {
 	return &cors.Config{
 		AllowOrigins:     strings.Join(cc.AllowOrigins, ","),
 		AllowHeaders:     "Origin, Content-Type, Accept",
-		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		AllowMethods:     "GET, POST, HEAD, OPTIONS",
 		AllowCredentials: true,
 	}, nil
 }

@@ -13,13 +13,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 )
 
-// Embed a directory
 //go:embed static/*
 var embedDirStatic embed.FS
 
 func main() {
 	app := fiber.New()
-
 
 	// CORS Configuration
 	corsConfig, err := util.GenerateCORSConfig()
@@ -30,29 +28,36 @@ func main() {
 
 	// Static File Serving
 	app.Use("/static", filesystem.New(filesystem.Config{
-		Root: http.FS(embedDirStatic),
+		Root:       http.FS(embedDirStatic),
 		PathPrefix: "static",
-		Browse: false,
+		Browse:     false,
 	}))
 
-	// Routes
-	app.Get("/", func(c *fiber.Ctx) error {
-		sysinfo , _ := util.GetSystemInfo()
-		return util.TemplRender(c, templates.HomePage(*sysinfo))
-	})
-	app.Get("/ping", func(c *fiber.Ctx) error {
-		sysinfo , _ := util.GetSystemInfo()
-		return util.TemplRender(c, templates.PingPage(*sysinfo))
-	})
-	app.Get("/traceroute", func(c *fiber.Ctx) error {
-		sysinfo , _ := util.GetSystemInfo()
-		return util.TemplRender(c, templates.TraceroutePage(*sysinfo))
-	})
-	app.Get("/bgp", func(c *fiber.Ctx) error {
-		sysinfo , _ := util.GetSystemInfo()
-		return util.TemplRender(c, templates.BGPPage(*sysinfo))
+	// Init helpers/data
+	sysinfo, _ := util.GetSystemInfo()
+
+	// ROUTES
+	// Views
+	app.Get("/:name?", func(c *fiber.Ctx) error {
+		name := c.Params("name")
+		c.Locals("name", name)
+
+		component := templates.HomePage(*sysinfo)
+		if name == "ping" {
+			component = templates.PingPage(*sysinfo)
+		} else if name == "traceroute" {
+			component = templates.TraceroutePage(*sysinfo)
+		} else if name == "bgp" {
+	 		component = templates.BGPPage(*sysinfo)
+		}
+
+		return util.TemplRender(c, component)
 	})
 
+	// View Handlers
+	app.Post("/ping", func(c *fiber.Ctx) error {
+		return nil
+	})
 
 	log.Fatal(app.Listen(":2152"))
 }
