@@ -36,14 +36,23 @@ func main() {
 	}))
 
 	// Routes
-	app.Get("/:name?", func(c *fiber.Ctx) error {
-		name := c.Params("name")
-		c.Locals("name", name)
-		if name == "" {
-			name = "World"
-		}
-		return util.TemplRender(c, templates.Hello(name))
+	app.Get("/", func(c *fiber.Ctx) error {
+		sysinfo , _ := util.GetSystemInfo()
+		return util.TemplRender(c, templates.HomePage(*sysinfo))
 	})
+	app.Get("/ping", func(c *fiber.Ctx) error {
+		sysinfo , _ := util.GetSystemInfo()
+		return util.TemplRender(c, templates.PingPage(*sysinfo))
+	})
+	app.Get("/traceroute", func(c *fiber.Ctx) error {
+		sysinfo , _ := util.GetSystemInfo()
+		return util.TemplRender(c, templates.TraceroutePage(*sysinfo))
+	})
+	app.Get("/bgp", func(c *fiber.Ctx) error {
+		sysinfo , _ := util.GetSystemInfo()
+		return util.TemplRender(c, templates.BGPPage(*sysinfo))
+	})
+
 
 	log.Fatal(app.Listen(":2152"))
 }
