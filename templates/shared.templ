@@ -1,0 +1,60 @@
+package templates
+
+import "github.com/aethersh/algae/util"
+
+templ system(si util.SystemInfo) {
+	<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow ">
+		<div class="px-2 py-4 sm:px-4 font-semibold text-lg">
+			Node Information
+		</div>
+		<div class="px-2 py-4 sm:px-4">
+			<p class="rounded w-full bg-gray-200 p-1 px-1 font-mono">
+				Node: { si.FQDN }
+				<br/>
+				Test Endpoint: { si.TestEndpoint }
+			</p>
+		</div>
+	</div>
+}
+
+templ title() {
+	<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow ">
+		<div class="px-2 py-4 sm:px-4">
+			<h1 class="font-semibold text-2xl">AetherNet Looking Glass</h1>
+		</div>
+		<div class="px-2 py-4 sm:p-4 flex justify-between gap-x-2">
+			@linkButton("/ping", "Ping")
+			@linkButton("/traceroute", "Traceroute")
+			@linkButton("/bgp", "BGP")
+		</div>
+	</div>
+}
+
+templ linkButton(href string, text string) {
+	<a href={ href } class=" text-center basis-1/3 rounded-sm bg-purple-600 px-3 py-2 font-semibold text-sm text-white shadow-xs hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600">{ text }</a>
+}
+
+templ page(si util.SystemInfo) {
+	<head>
+		<link rel="preconnect" href="https://rsms.me/"/>
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+		<link rel="stylesheet" href="/static/style.css"/>
+		<script src="/static/htmx.min.js"></script>
+	</head>
+	<div class="w-screen h-screen flex bg-gray-200 justify-center py-2">
+		<div class="flex flex-col gap-y-2 md:max-w-xl md:w-xl w-full ">
+			@title()
+			@system(si)
+			{ children... }
+			<span class="text-sm w-full mt-auto text-center opacity-75">Looking Glass powered by <a class=" visited:text-purple-600 text-blue-600 hover:text-blue-700 ml-0.25" href="https://github.com/aethernet/algae">Algae</a></span>
+		</div>
+	</div>
+}
+
+templ card() {
+	<div class="overflow-hidden bg-white shadow  sm:rounded-lg">
+		<div class="px-4 py-5 sm:p-6">
+			{ children... }
+		</div>
+	</div>
+}
