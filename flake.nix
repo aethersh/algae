@@ -10,12 +10,14 @@
       url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    templ.url = "github:a-h/templ";
   };
 
   outputs = inputs @ {
     flake-parts,
     nixpkgs,
     gomod2nix,
+    templ,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -25,6 +27,7 @@
         system,
         ...
       }: rec  {
+        #      https://templ.guide/quick-start/installation#nix
         # packages = rec {
         #   default = pkgs.callPackage ./tungsten.nix {
         #     inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
@@ -42,6 +45,7 @@
             gotools
             go-tools
             gomod2nix.packages.${system}.default
+            templ.packages.${system}.templ
           ];
         };
         formatter = pkgs.alejandra;
