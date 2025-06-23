@@ -15,19 +15,20 @@ var validate = validator.New()
 // ValidateIPv6Address validates an IPv6 address and returns a net.IPAddr.
 // It returns an error if the address is not valid.
 func ValidateIPv6Address(ip string) (*net.IPAddr, error) {
+	ip = strings.TrimSpace(ip)
 	if err := validate.Var(ip, "ipv6"); err != nil {
-		util.Logger.Err(err)
+		util.Logger.Err(err).Msgf("not valid ipv6")
 		return nil, err
 	}
 	addr := net.ParseIP(ip)
 	if addr == nil {
 		e := fmt.Errorf("invalid IPv6 address: %s", ip)
-		util.Logger.Err(e)
+		util.Logger.Err(e).Msgf("could not parse ipv6")
 		return nil, e
 	}
 	if addr.IsUnspecified() || addr.IsLoopback() || addr.IsMulticast() {
 		e := fmt.Errorf("address %s is not a valid IPv6 address", ip)
-		util.Logger.Err(e)
+		util.Logger.Err(e).Msgf("invalid ipv6 class")
 		return nil, e
 	}
 	return &net.IPAddr{IP: addr}, nil
@@ -36,11 +37,15 @@ func ValidateIPv6Address(ip string) (*net.IPAddr, error) {
 // ValidateIPv6Host takes an IPv6 address or FQDN. If it's an FQDN, it checks if it resolves to an IPv6 address.
 // It returns a net.IPAddr if the host is valid, or an error if it is not.
 func ValidateIPv6Host(host string) (ip *net.IPAddr, hostn *string, err error) {
+	host = strings.TrimSpace(host)
 	if ip, err := ValidateIPv6Address(host); err == nil {
+		util.Logger.Debug().Msgf("Found valid host v6 address: %s", ip)
 		// Is valid IPv6 address, return success
 		return ip, &host, nil
 	}
+
 	if err := validate.Var(host, "fqdn"); err != nil {
+		util.Logger.Err(err).Msgf("FQDN validation error")
 		// Not valid FQDN, return err
 		e := fmt.Errorf("invalid host: %s, error: %w", host, err)
 		util.Logger.Err(e)

@@ -4,6 +4,7 @@ import (
 	"embed"
 	"net/http"
 
+	"github.com/aethersh/algae/mtr"
 	"github.com/aethersh/algae/templates"
 	"github.com/aethersh/algae/util"
 
@@ -24,6 +25,7 @@ func main() {
 	app.Use(fiberzerolog.New(fiberzerolog.Config{
 		Logger: &util.RequestLogger,
 	}))
+
 	// CORS Configuration
 	corsConfig, err := util.GenerateCORSConfig()
 	if err != nil {
@@ -59,9 +61,19 @@ func main() {
 		return util.TemplRender(c, component)
 	})
 
-	// View Handlers
+	// Action Handlers
 	app.Post("/ping", func(c *fiber.Ctx) error {
-		return nil
+		host := c.FormValue("ipAddr")
+		out, err := mtr.RunPingCmd(host)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.SendString(err.Error())
+		}
+
+		println(*out)
+
+		component := templates.PingOutput(*out)
+		return util.TemplRender(c, component)
 	})
 
 	log.Fatal(app.Listen(":2152"))

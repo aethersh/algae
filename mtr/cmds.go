@@ -3,17 +3,16 @@ package mtr
 import (
 	"fmt"
 	"os/exec"
-	"strconv"
 
 	"github.com/aethersh/algae/util"
 )
 
-func cmdPreamble(ip string, host string, cmd string) []byte {
-	rtn := []byte("")
+func cmdPreamble(ip string, host string, cmd string) string {
+	rtn := ""
 	if ip != host {
-		rtn = strconv.AppendQuote(rtn, (fmt.Sprintln("Hostname %s resolved to %w", host, ip)))
+		rtn = fmt.Sprintf("Hostname %s resolved to %s\n", host, ip)
 	}
-	rtn = strconv.AppendQuote(rtn, (fmt.Sprintln("$ %s", cmd)))
+	rtn = fmt.Sprintf("%s$ %s", rtn, cmd)
 	return rtn
 }
 
@@ -23,9 +22,11 @@ func RunPingCmd(host string) (*string, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("ping", "-c 5", ip.String())
+	util.Logger.Debug().Msgf("Pinging address %s", ip)
+
+	cmd := exec.Command("ping6", "-c 5", ip.String())
 	cmdOut, err := cmd.Output()
-	out := string(fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut))
+	out := fmt.Sprintf("%s\n%s", cmdPreamble(ip.String(), *hostn, cmd.String()), string(cmdOut))
 
 	if err != nil {
 		util.Logger.Err(err).Msg("Failed to run ping command")
@@ -42,7 +43,7 @@ func RunMTRCmd(host string) (*string, error) {
 
 	cmd := exec.Command("mtr", "-6", "-z", "-b", "-r", "-w", "-o SLAVM", *hostn)
 	cmdOut, err := cmd.Output()
-	out := string(fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut))
+	out := fmt.Sprintf("%s\n%s", cmdPreamble(ip.String(), *hostn, cmd.String()), string(cmdOut))
 
 	if err != nil {
 		util.Logger.Err(err).Msg("Failed to run MTR command")
