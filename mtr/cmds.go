@@ -16,7 +16,7 @@ func cmdPreamble(ip string, host string, cmd string) string {
 	}
 	cmdParts := strings.Split(cmd, "/")
 	if strings.Contains(ip, "/") {
-		cmd = cmdParts[len(cmdParts)-2]
+		cmd = fmt.Sprintf("%s/%s", cmdParts[len(cmdParts)-2], cmdParts[len(cmdParts)-1])
 	} else {
 		cmd = cmdParts[len(cmdParts)-1]
 	}
