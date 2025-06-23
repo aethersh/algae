@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
+	"errors"
 	"net/http"
+	"os/exec"
 
 	"github.com/aethersh/algae/mtr"
 	"github.com/aethersh/algae/templates"
@@ -70,9 +72,23 @@ func main() {
 			return c.SendString(err.Error())
 		}
 
-		println(*out)
+		component := templates.CodeOutput(*out)
+		return util.TemplRender(c, component)
+	})
+	app.Post("/traceroute", func(c *fiber.Ctx) error {
+		host := c.FormValue("ipAddr")
+		out, err := mtr.RunMTRCmd(host)
+		if err != nil {
+			if errors.Is(err, &exec.ExitError{}) {
+				c.Status(fiber.StatusInternalServerError)
+			} else {
+				c.Status(fiber.StatusBadRequest)
+			}
+			
+			return c.SendString(err.Error())
+		}
 
-		component := templates.PingOutput(*out)
+		component := templates.CodeOutput(*out)
 		return util.TemplRender(c, component)
 	})
 
