@@ -26,7 +26,7 @@
         pkgs,
         system,
         ...
-      }: rec  {
+      }: {
         # https://templ.guide/quick-start/installation#nix
         packages = rec {
           default = pkgs.callPackage ./algae.nix {

@@ -1,6 +1,7 @@
 {
   buildGoApplication,
   templ,
+  pkgs, 
   ...
 }:
 buildGoApplication {
@@ -13,5 +14,6 @@ buildGoApplication {
 
   preBuild = ''
   ${templ}/bin/templ generate
+  ${pkgs.tailwindcss_4}/bin/tailwindcss -i templates/style.css -o static/style.css -m	
   '';
 }
