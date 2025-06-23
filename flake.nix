@@ -48,6 +48,7 @@
             gomod2nix.packages.${system}.default
             templ.packages.${system}.templ
             tailwindcss_4
+	    just
           ];
 
           ALGAE_ALLOWED_ORIGINS = "http://localhost:2152";
