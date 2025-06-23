@@ -21,6 +21,7 @@ require (
 )
 
 require (
+	github.com/StatCan/go-birdc v0.2.0
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/gofiber/contrib/fiberzerolog v1.0.3

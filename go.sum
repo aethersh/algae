@@ -1,3 +1,5 @@
+github.com/StatCan/go-birdc v0.2.0 h1:mT+yl9/zwVUkstZDWWMDHGyrypdSRw1Ern5MoO3n/uE=
+github.com/StatCan/go-birdc v0.2.0/go.mod h1:o52ccHboVzxUHRKL7fuJVl5Wm85SnUwZ85V4t7C4mOE=
 github.com/a-h/templ v0.3.898 h1:g9oxL/dmM6tvwRe2egJS8hBDQTncokbMoOFk1oJMX7s=
 github.com/a-h/templ v0.3.898/go.mod h1:oLBbZVQ6//Q6zpvSMPTuBK0F3qOtBdFBcGRspcT+VNQ=
 github.com/andybalholm/brotli v1.1.0 h1:eLKJA0d02Lf0mVpIDgYnqXcUn0GqVmEFny3VuID1U3M=
