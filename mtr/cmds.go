@@ -15,7 +15,11 @@ func cmdPreamble(ip string, host string, cmd string) string {
 		rtn = fmt.Sprintf("Hostname %s resolved to %s\n", host, ip)
 	}
 	cmdParts := strings.Split(cmd, "/")
-	cmd = cmdParts[len(cmdParts)-1]
+	if strings.Contains(ip, "/") {
+		cmd = cmdParts[len(cmdParts)-2]
+	} else {
+		cmd = cmdParts[len(cmdParts)-1]
+	}
 
 	rtn = fmt.Sprintf("%s$ %s", rtn, cmd)
 	return rtn
@@ -75,7 +79,7 @@ func RunBIRDCmd(cidr string) (*string, int, error) {
 	out := fmt.Sprintf("%s\n%s", cmdPreamble(cidr, cidr, cmd.String()), string(cmdOut))
 	if err != nil {
 		util.Logger.Err(err).Msg("Failed to run birdc command")
-		return &out,  fiber.StatusBadRequest, err
+		return &out, fiber.StatusBadRequest, err
 	}
 
 	return &out, fiber.StatusOK, nil
