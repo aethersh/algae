@@ -1,0 +1,11 @@
+package templates
+
+import "github.com/aethersh/algae/util"
+
+templ TraceroutePage(si util.SystemInfo) {
+	@page(si) {
+		@functionalityCard("Traceroute") {
+			@ipAddressInput("traceroute-ip", "Traceroute!", "/traceroute")
+		}
+	}
+}

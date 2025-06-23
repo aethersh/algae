@@ -3,3 +3,11 @@
 .DS_Store
 .direnv
 .idea
+tmp
+vendor
+
+*_templ.go
+
+static/style.css
+algae
+result

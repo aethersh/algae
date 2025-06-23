@@ -1,0 +1,112 @@
+package templates
+
+import (
+	"github.com/aethersh/algae/util"
+	"strings"
+)
+
+templ page(si util.SystemInfo) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>{ si.Hostname } | AS215207 Looking Glass</title>
+			<link rel="preconnect" href="https://rsms.me/"/>
+			<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+			<link rel="stylesheet" href="/static/style.css"/>
+			<script src="/static/htmx.min.js"></script>
+			<meta name="htmx-config" content='{"responseHandling": [{"code":"...", "swap": true}]}'/>
+		</head>
+		<body class="w-screen h-screen flex bg-gray-200 dark:bg-zinc-950 dark:text-white justify-center py-2">
+			<div class="flex flex-col gap-y-2 md:max-w-3xl md:w-3xl w-full md:px-0 px-2">
+				@title()
+				@system(si)
+				{ children... }
+				<span class="text-sm w-full mt-auto text-center opacity-75">Looking Glass powered by <a class=" visited:text-purple-600 text-blue-600 hover:text-blue-700 ml-0.25" target="_blank" href="https://github.com/aethersh/algae">Algae</a></span>
+			</div>
+		</body>
+	</html>
+}
+
+templ system(si util.SystemInfo) {
+	<div class="overflow-hidden rounded-lg bg-white dark:bg-zinc-900 shadow px-2 py-2">
+		<p class="rounded w-full bg-gray-200 dark:bg-zinc-800 px-2 font-mono text-base/8">
+			Node: { si.FQDN }
+			<br/>
+			Location: { si.Location }
+			<br/>
+			Test Endpoint: { si.TestEndpoint }
+			<br/>
+			Test IPv6 Address: { si.TestV6 }
+		</p>
+	</div>
+}
+
+templ title() {
+	<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white dark:bg-zinc-900 dark:divide-zinc-800 shadow ">
+		<div class="px-2 py-4 sm:px-4">
+			<h1 class="font-semibold text-2xl">AetherNet Looking Glass</h1>
+			<p class="text-sm opacity-75 italic">
+				Please note: this network is IPv6 only. You can only run tests against IPv6 addresses or ranges.
+			</p>
+		</div>
+		<div class="px-2 py-4 sm:p-4 flex justify-between gap-x-2">
+			@linkButton("/ping", "Ping")
+			@linkButton("/traceroute", "Traceroute")
+			@linkButton("/bgp", "BGP Prefix Route")
+		</div>
+	</div>
+}
+
+templ linkButton(href string, text string) {
+	<a href={ href } class=" text-center basis-1/3 rounded-sm bg-purple-600 px-3 py-2 font-semibold text-sm text-white shadow-xs hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600">{ text }</a>
+}
+
+templ functionalityCard(title string) {
+	<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white dark:bg-zinc-900 dark:divide-zinc-800 shadow ">
+		<div class="px-2 py-4 sm:px-4 font-semibold text-lg">
+			{ title }
+		</div>
+		<div class="px-2 py-4 sm:p-4 flex flex-col">
+			{ children... }
+			<div id="result"></div>
+		</div>
+	</div>
+}
+
+templ ipAddressInput(formId string, actionText string, endpoint string) {
+	<div class="w-full flex flex-col">
+		<form id={ formId } hx-post={ endpoint } hx-target={ "#result" } hx-swap="outerHTML" data-beans="beans" class="w-full flex gap-x-2 items-end">
+			<div class="basis-full">
+				<label for="ipAddr" class="block text-sm/6 font-medium text-gray-900 dark:text-white">IPv6 Address (or Hostname)</label>
+				<div class="mt-2">
+					<input type="text" name="ipAddr" id="ipAddr" class="block w-full rounded-md bg-white dark:bg-zinc-900 dark:divide-zinc-800 px-3 py-1.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-700 placeholder:text-gray-400 dark:placeholder:text-zinc-600 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 sm:text-sm/6" placeholder="2602:fbcf:df::1"/>
+				</div>
+			</div>
+			<button type="submit" class="text-nowrap rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 w-fit h-min disabled:cursor-not-allowed disabled:opacity-70">{ actionText }</button>
+		</form>
+	</div>
+}
+
+templ ipCidrInput(formId string, actionText string, endpoint string) {
+	<div class="w-full flex flex-col">
+		<form id={ formId } hx-post={ endpoint } hx-target={ "#result" } hx-swap="outerHTML" class="w-full flex gap-x-2 items-end">
+			<div class="basis-full">
+				<label for="ipRange" class="block text-sm/6 font-medium text-gray-900 dark:text-white">IPv6 Address or Range (CIDR Notation)</label>
+				<div class="mt-2">
+					<input type="text" name="ipRange" id="ipRange" class="block w-full rounded-md bg-white dark:bg-zinc-900 dark:divide-zinc-800 px-3 py-1.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-700 placeholder:text-gray-400 dark:placeholder:text-zinc-600 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 sm:text-sm/6" placeholder="2602:fbcf:d0::/44"/>
+				</div>
+			</div>
+			<button type="submit" class=" text-nowrap rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 w-fit h-min">{ actionText }</button>
+		</form>
+	</div>
+}
+
+templ CodeOutput(res string) {
+	<div id="result" class="w-full h-full rounded-lg  shadow py-2">
+		<pre class="rounded w-full h-full bg-gray-200 dark:bg-zinc-800 px-2 py-2 font-mono overflow-x-auto text-sm overflow-y-auto text-nowrap">
+			for line := range strings.Lines(res) {
+				{ line }
+			}
+		</pre>
+	</div>
+}
