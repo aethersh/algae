@@ -1,27 +1,11 @@
 package templates
 
-import (
-	"github.com/aethersh/algae/util"
-	"strings"
-)
+import "github.com/aethersh/algae/util"
 
 templ PingPage(si util.SystemInfo) {
 	@page(si) {
 		@functionalityCard("Ping") {
 			@ipAddressInput("ping-ip", "Ping!", "/ping")
-			<div id="result"></div>
 		}
 	}
-}
-
-templ PingOutput(res string) {
-	<div id="result" class="overflow-hidden w-full rounded-lg bg-white dark:bg-zinc-900 shadow py-2">
-		<p class="rounded w-full bg-gray-200 dark:bg-zinc-800 px-2 font-mono overflow-x-auto text-sm overflow-y-auto text-nowrap">
-			for line := range strings.Lines(res) {
-				{ line }
-				<br/>
-			}
-			// { res }
-		</p>
-	</div>
 }
