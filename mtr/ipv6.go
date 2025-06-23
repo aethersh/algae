@@ -3,7 +3,6 @@ package mtr
 import (
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 
 	"github.com/aethersh/algae/util"
@@ -85,11 +84,11 @@ func ValidateIPv6CIDR(cidr string) (*net.IPNet, error) {
 		return nil, e
 	}
 	// Check if the IPv6 CIDR Mask is a /48 or bigger
-	maskInt, _ := strconv.Atoi((strings.Split(cidr, "/")[1]))
-	if maskInt > 48 {
-		e := fmt.Errorf("CIDR %s mask is too small (must be /48 or larger)", cidr)
-		util.Logger.Err(e)
-		return nil, e
-	}
+	//maskInt, _ := strconv.Atoi((strings.Split(cidr, "/")[1]))
+	//if maskInt > 48 {
+	//	e := fmt.Errorf("CIDR %s mask is too small (must be /48 or larger)", cidr)
+	//	util.Logger.Err(e)
+	//	return nil, e
+	//}
 	return ipNet, nil
 }

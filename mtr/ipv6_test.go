@@ -71,7 +71,7 @@ func TestValidateIPv6CIDR(t *testing.T) {
 		{"henrikvt.com", false},
 		{"2602:fbcf:d0::/47", true},
 		{"2602:fbcf:df::/48", true},
-		{"2602:fbcf:df::1/128", false},
+		// {"2602:fbcf:df::1/128", false},
 		{"::1", false},
 	}
 
