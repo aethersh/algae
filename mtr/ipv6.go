@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aethersh/algae/util"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -15,14 +16,19 @@ var validate = validator.New()
 // It returns an error if the address is not valid.
 func ValidateIPv6Address(ip string) (*net.IPAddr, error) {
 	if err := validate.Var(ip, "ipv6"); err != nil {
+		util.Logger.Err(err)
 		return nil, err
 	}
 	addr := net.ParseIP(ip)
 	if addr == nil {
-		return nil, fmt.Errorf("invalid IPv6 address: %s", ip)
+		e := fmt.Errorf("invalid IPv6 address: %s", ip)
+		util.Logger.Err(e)
+		return nil, e
 	}
 	if addr.IsUnspecified() || addr.IsLoopback() || addr.IsMulticast() {
-		return nil, fmt.Errorf("address %s is not a valid IPv6 address", ip)
+		e := fmt.Errorf("address %s is not a valid IPv6 address", ip)
+		util.Logger.Err(e)
+		return nil, e
 	}
 	return &net.IPAddr{IP: addr}, nil
 }
@@ -36,14 +42,18 @@ func ValidateIPv6Host(host string) (ip *net.IPAddr, hostn *string, err error) {
 	}
 	if err := validate.Var(host, "fqdn"); err != nil {
 		// Not valid FQDN, return err
-		return nil, nil, fmt.Errorf("invalid host: %s, error: %w", host, err)
+		e := fmt.Errorf("invalid host: %s, error: %w", host, err)
+		util.Logger.Err(e)
+		return nil, nil, e
 	}
 	// Is valid FQDN, lookup for v6 address
 	addrs, err := net.LookupIP(host)
 	if err != nil {
 		// can't resolve FQDN, return err
-		return nil, nil, fmt.Errorf("failed to resolve host %s: %w", host,
+		e := fmt.Errorf("failed to resolve host %s: %w", host,
 			err)
+		util.Logger.Err(e)
+		return nil, nil, e
 	}
 	// pull out a v6 addr from records
 	for _, a := range addrs {
@@ -51,22 +61,30 @@ func ValidateIPv6Host(host string) (ip *net.IPAddr, hostn *string, err error) {
 			return ip, &host, nil
 		}
 	}
-	return nil, nil, fmt.Errorf("no valid IPv6 address found for host %s", host)
+
+	e := fmt.Errorf("no valid IPv6 address found for host %s", host)
+	util.Logger.Err(e)
+	return nil, nil, e
 }
 
 // ValidateIPv6CIDR validates an IPv6 CIDR notation and returns a net.IPNet.
 func ValidateIPv6CIDR(cidr string) (*net.IPNet, error) {
 	if err := validate.Var(cidr, "cidrv6"); err != nil {
+		util.Logger.Err(err)
 		return nil, err
 	}
 	_, ipNet, err := net.ParseCIDR(cidr)
 	if err != nil {
-		return nil, fmt.Errorf("invalid CIDR notation: %s, error: %w", cidr, err)
+		e := fmt.Errorf("invalid CIDR notation: %s, error: %w", cidr, err)
+		util.Logger.Err(e)
+		return nil, e
 	}
 	// Check if the IPv6 CIDR Mask is a /48 or bigger
 	maskInt, _ := strconv.Atoi((strings.Split(cidr, "/")[1]))
 	if maskInt > 48 {
-		return nil, fmt.Errorf("CIDR %s mask is too small (must be /48 or larger)", cidr)
+		e := fmt.Errorf("CIDR %s mask is too small (must be /48 or larger)", cidr)
+		util.Logger.Err(e)
+		return nil, e
 	}
 	return ipNet, nil
 }

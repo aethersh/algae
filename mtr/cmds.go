@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strconv"
+
+	"github.com/aethersh/algae/util"
 )
 
 func cmdPreamble(ip string, host string, cmd string) []byte {
@@ -15,26 +17,36 @@ func cmdPreamble(ip string, host string, cmd string) []byte {
 	return rtn
 }
 
-func RunPingCmd(host string) (string, error) {
+func RunPingCmd(host string) (*string, error) {
 	ip, hostn, err := ValidateIPv6Host(host)
+	if err != nil {
+		return nil, err
+	}
+
 	cmd := exec.Command("ping", "-c 5", ip.String())
 	cmdOut, err := cmd.Output()
-	out := fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut)
+	out := string(fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut))
 
 	if err != nil {
-		return string(out), err
+		util.Logger.Err(err).Msg("Failed to run ping command")
+		return &out, err
 	}
-	return string(out), nil
+	return &out, nil
 }
 
-func RunMTRCmd(host string) (string, error) {
+func RunMTRCmd(host string) (*string, error) {
 	ip, hostn, err := ValidateIPv6Host(host)
+	if err != nil {
+		return nil, err
+	}
+
 	cmd := exec.Command("mtr", "-6", "-z", "-b", "-r", "-w", "-o SLAVM", *hostn)
 	cmdOut, err := cmd.Output()
-	out := fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut)
+	out := string(fmt.Appendln(cmdPreamble(ip.String(), *hostn, cmd.String()), cmdOut))
 
 	if err != nil {
-		return string(out), err
+		util.Logger.Err(err).Msg("Failed to run MTR command")
+		return &out, err
 	}
-	return string(out), nil
+	return &out, nil
 }
