@@ -1,3 +1,10 @@
 # Algae
 
-Algae is a looking glass built for AetherNet (AS215207). It is designed to be run on software routers that utilize the BIRD Internet Routing Daemon. BIRD, along with ping and mtr, are used to provide the 3 primary useful tools
+Algae is a looking glass built for AetherNet (AS215207).
+
+**Features**
+
+- Fully self contained (including UI)
+- Simple (minimal configuration, does not serve information from multiple routers)
+- Focused on IPv6-only networks
+- Queries BIRD Internet Routing Daemon for BGP information
