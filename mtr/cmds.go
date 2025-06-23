@@ -3,6 +3,7 @@ package mtr
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/aethersh/algae/util"
 )
@@ -12,6 +13,9 @@ func cmdPreamble(ip string, host string, cmd string) string {
 	if ip != host {
 		rtn = fmt.Sprintf("Hostname %s resolved to %s\n", host, ip)
 	}
+	cmdParts := strings.Split(cmd, "/")
+	cmd = cmdParts[len(cmdParts) - 1]
+
 	rtn = fmt.Sprintf("%s$ %s", rtn, cmd)
 	return rtn
 }
