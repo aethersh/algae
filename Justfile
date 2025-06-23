@@ -15,3 +15,6 @@ dev-html:
 
 dev-css:
   tailwindcss -i templates/style.css -o static/style.css -m -w
+
+fmt:
+  gofmt -w .
