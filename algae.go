@@ -87,7 +87,7 @@ func main() {
 		rRes, status, _ := mtr.RunBIRDCmd(cidr)
 
 		c.Status(status)
-		
+
 		component := templates.CodeOutput(*rRes)
 		return util.TemplRender(c, component)
 	})
