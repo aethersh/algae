@@ -49,5 +49,9 @@ func GetSystemInfo() (*SystemInfo, error) {
 			si.TestV6 = a.String()
 		}
 	}
+
+	Logger.Debug().Msgf("Node (FQDN): %s - Location: %s - Test Endpoint: %s - Test V6: %s", 
+	si.FQDN, si.Location, si.TestEndpoint, si.TestV6)
+
 	return &si, nil
 }
