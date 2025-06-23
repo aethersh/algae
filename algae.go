@@ -2,9 +2,7 @@ package main
 
 import (
 	"embed"
-	"errors"
 	"net/http"
-	"os/exec"
 
 	"github.com/aethersh/algae/mtr"
 	"github.com/aethersh/algae/templates"
@@ -46,7 +44,6 @@ func main() {
 	// Init helpers/data
 	sysinfo, _ := util.GetSystemInfo()
 	b := birdc.New(&birdc.BirdClientOptions{}) // optionally you can specify a path to the unix socket endpoint (defaults to: /run/bird/bird.ctl)
-	
 
 	// ROUTES
 	// Views
@@ -71,8 +68,7 @@ func main() {
 		host := c.FormValue("ipAddr")
 		out, err := mtr.RunPingCmd(host)
 		if err != nil {
-			c.Status(fiber.StatusBadRequest)
-			return c.SendString(err.Error())
+			c.Status(fiber.StatusInternalServerError)
 		}
 
 		component := templates.CodeOutput(*out)
@@ -82,13 +78,7 @@ func main() {
 		host := c.FormValue("ipAddr")
 		out, err := mtr.RunMTRCmd(host)
 		if err != nil {
-			if errors.Is(err, &exec.ExitError{}) {
-				c.Status(fiber.StatusInternalServerError)
-			} else {
-				c.Status(fiber.StatusBadRequest)
-			}
-			
-			return c.SendString(err.Error())
+			c.Status(fiber.StatusInternalServerError)
 		}
 
 		component := templates.CodeOutput(*out)
@@ -96,15 +86,21 @@ func main() {
 	})
 	app.Post("/bgp", func(c *fiber.Ctx) error {
 		cidr := c.FormValue("ipRange")
-		_, err := mtr.ValidateIPv6CIDR(cidr)
-		if err != nil {
-				c.Status(fiber.StatusBadRequest)
-			return c.SendString(err.Error())
+		rRes := ""
+		
+		if _, err := mtr.ValidateIPv6CIDR(cidr); err == nil {
+			// If it's a CIDR, look for the cidr route
+			routeRespBytes, _, _ := b.ShowRoute("all", cidr)
+			rRes = string(routeRespBytes)
+		} else if _, err := mtr.ValidateIPv6Address(cidr); err == nil {
+			// If it's not a CIDR, check if it's a single ipv6 address
+			routeRespBytes, _, _ := b.ShowRoute("all", "for", cidr)
+			rRes = string(routeRespBytes)
+		} else {
+			c.Status(fiber.StatusBadRequest)
+			rRes = "Error: invalid IPv6 address or CIDR"
 		}
 
-		routeRespBytes, _, err := b.ShowRoute("full",cidr)
-		rRes := string(routeRespBytes)
-		
 		component := templates.CodeOutput(rRes)
 		return util.TemplRender(c, component)
 	})

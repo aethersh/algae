@@ -91,7 +91,7 @@ templ ipCidrInput(formId string, actionText string, endpoint string) {
 	<div class="w-full flex flex-col">
 		<form id={ formId } hx-post={ endpoint } hx-target={ "#result" } hx-swap="outerHTML" class="w-full flex gap-x-2 items-end">
 			<div class="basis-full">
-				<label for="ipRange" class="block text-sm/6 font-medium text-gray-900 dark:text-white">IPv6 Range (CIDR Notation)</label>
+				<label for="ipRange" class="block text-sm/6 font-medium text-gray-900 dark:text-white">IPv6 Address or Range (CIDR Notation)</label>
 				<div class="mt-2">
 					<input type="text" name="ipRange" id="ipRange" class="block w-full rounded-md bg-white dark:bg-zinc-900 dark:divide-zinc-800 px-3 py-1.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-700 placeholder:text-gray-400 dark:placeholder:text-zinc-600 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 sm:text-sm/6" placeholder="2602:fbcf:d0::/44"/>
 				</div>
