@@ -94,7 +94,7 @@ func main() {
 		component := templates.CodeOutput(*out)
 		return util.TemplRender(c, component)
 	})
-	app.Post("/bgp-prefix", func(c *fiber.Ctx) error {
+	app.Post("/bgp", func(c *fiber.Ctx) error {
 		cidr := c.FormValue("ipRange")
 		_, err := mtr.ValidateIPv6CIDR(cidr)
 		if err != nil {
