@@ -8,7 +8,6 @@ import (
 	"github.com/aethersh/algae/templates"
 	"github.com/aethersh/algae/util"
 
-	birdc "github.com/StatCan/go-birdc"
 	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -43,7 +42,6 @@ func main() {
 
 	// Init helpers/data
 	sysinfo, _ := util.GetSystemInfo()
-	b := birdc.New(&birdc.BirdClientOptions{}) // optionally you can specify a path to the unix socket endpoint (defaults to: /run/bird/bird.ctl)
 
 	// ROUTES
 	// Views
@@ -86,22 +84,11 @@ func main() {
 	})
 	app.Post("/bgp", func(c *fiber.Ctx) error {
 		cidr := c.FormValue("ipRange")
-		rRes := ""
-		
-		if _, err := mtr.ValidateIPv6CIDR(cidr); err == nil {
-			// If it's a CIDR, look for the cidr route
-			routeRespBytes, _, _ := b.ShowRoute("all", cidr)
-			rRes = string(routeRespBytes)
-		} else if _, err := mtr.ValidateIPv6Address(cidr); err == nil {
-			// If it's not a CIDR, check if it's a single ipv6 address
-			routeRespBytes, _, _ := b.ShowRoute("all", "for", cidr)
-			rRes = string(routeRespBytes)
-		} else {
-			c.Status(fiber.StatusBadRequest)
-			rRes = "Error: invalid IPv6 address or CIDR"
-		}
+		rRes, status, _ := mtr.RunBIRDCmd(cidr)
 
-		component := templates.CodeOutput(rRes)
+		c.Status(status)
+		
+		component := templates.CodeOutput(*rRes)
 		return util.TemplRender(c, component)
 	})
 

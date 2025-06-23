@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/aethersh/algae/util"
+	"github.com/gofiber/fiber/v2"
 )
 
 func cmdPreamble(ip string, host string, cmd string) string {
@@ -53,4 +54,29 @@ func RunMTRCmd(host string) (*string, error) {
 		util.Logger.Err(err).Msg("Failed to run MTR command")
 	}
 	return &out, nil
+}
+
+func RunBIRDCmd(cidr string) (*string, int, error) {
+	valid := false
+
+	if _, err := ValidateIPv6CIDR(cidr); err == nil {
+		valid = true
+	} else if _, err := ValidateIPv6Address(cidr); err == nil {
+		valid = true
+	}
+
+	if !valid {
+		res := "invalid IPv6 address or CIDR"
+		return &res, fiber.StatusBadRequest, fmt.Errorf(res)
+	}
+
+	cmd := exec.Command("birdc", "show route all for", cidr)
+	cmdOut, err := cmd.Output()
+	out := fmt.Sprintf("%s\n%s", cmdPreamble(cidr, cidr, cmd.String()), string(cmdOut))
+	if err != nil {
+		util.Logger.Err(err).Msg("Failed to run birdc command")
+		return &out,  fiber.StatusBadRequest, err
+	}
+
+	return &out, fiber.StatusOK, nil
 }
