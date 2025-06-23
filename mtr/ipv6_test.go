@@ -46,13 +46,18 @@ func TestValidateIPv6Host(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.host, func(t *testing.T) {
-			addr, err := mtr.ValidateIPv6Host(tt.host)
+			addr, host, err := mtr.ValidateIPv6Host(tt.host)
+			
 			if tt.valid {
 				assert.NoError(t, err)
 				assert.NotNil(t, addr)
+				
+				hstStr := *host
+				assert.Equal(t, tt.host, hstStr)
 			} else {
 				assert.Error(t, err)
 				assert.Nil(t, addr)
+				assert.Nil(t, host)
 			}
 		})
 	}

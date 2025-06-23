@@ -29,24 +29,29 @@ func ValidateIPv6Address(ip string) (*net.IPAddr, error) {
 
 // ValidateIPv6Host takes an IPv6 address or FQDN. If it's an FQDN, it checks if it resolves to an IPv6 address.
 // It returns a net.IPAddr if the host is valid, or an error if it is not.
-func ValidateIPv6Host(host string) (*net.IPAddr, error) {
+func ValidateIPv6Host(host string) (ip *net.IPAddr, hostn *string, err error) {
 	if ip, err := ValidateIPv6Address(host); err == nil {
-		return ip, nil
+		// Is valid IPv6 address, return success
+		return ip, &host, nil
 	}
 	if err := validate.Var(host, "fqdn"); err != nil {
-		return nil, fmt.Errorf("invalid host: %s, error: %w", host, err)
+		// Not valid FQDN, return err
+		return nil, nil, fmt.Errorf("invalid host: %s, error: %w", host, err)
 	}
+	// Is valid FQDN, lookup for v6 address
 	addrs, err := net.LookupIP(host)
 	if err != nil {
-		return nil, fmt.Errorf("failed to resolve host %s: %w", host,
+		// can't resolve FQDN, return err
+		return nil, nil, fmt.Errorf("failed to resolve host %s: %w", host,
 			err)
 	}
+	// pull out a v6 addr from records
 	for _, a := range addrs {
 		if ip, err := ValidateIPv6Address(a.String()); err == nil {
-			return ip, nil
+			return ip, &host, nil
 		}
 	}
-	return nil, fmt.Errorf("no valid IPv6 address found for host %s", host)
+	return nil, nil, fmt.Errorf("no valid IPv6 address found for host %s", host)
 }
 
 // ValidateIPv6CIDR validates an IPv6 CIDR notation and returns a net.IPNet.
