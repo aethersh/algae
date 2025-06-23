@@ -1,3 +1,3 @@
-# algae
+# Algae
 
-algae is a looking glass server that aims to be fast and resource efficient. it supports ping and traceroute with no external dependencies. BIRDv2 is supported for queries that require actual routing information.
+Algae is a looking glass built for AetherNet (AS215207). It is designed to be run on software routers that utilize the BIRD Internet Routing Daemon. BIRD, along with ping and mtr, are used to provide the 3 primary useful tools
