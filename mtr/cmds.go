@@ -14,7 +14,7 @@ func cmdPreamble(ip string, host string, cmd string) string {
 		rtn = fmt.Sprintf("Hostname %s resolved to %s\n", host, ip)
 	}
 	cmdParts := strings.Split(cmd, "/")
-	cmd = cmdParts[len(cmdParts) - 1]
+	cmd = cmdParts[len(cmdParts)-1]
 
 	rtn = fmt.Sprintf("%s$ %s", rtn, cmd)
 	return rtn
@@ -45,13 +45,12 @@ func RunMTRCmd(host string) (*string, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("mtr", "-6", "-z", "-b", "-r", "-w", "-o SLAVM", *hostn)
+	cmd := exec.Command("mtr", "-6", "-z", "-b", "-r", "-w", "-o SLAVM", ip.String())
 	cmdOut, err := cmd.Output()
 	out := fmt.Sprintf("%s\n%s", cmdPreamble(ip.String(), *hostn, cmd.String()), string(cmdOut))
 
 	if err != nil {
 		util.Logger.Err(err).Msg("Failed to run MTR command")
-		return &out, err
 	}
 	return &out, nil
 }
