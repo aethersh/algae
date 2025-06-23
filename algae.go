@@ -7,6 +7,7 @@ import (
 	"github.com/aethersh/algae/templates"
 	"github.com/aethersh/algae/util"
 
+	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -19,6 +20,10 @@ var embedDirStatic embed.FS
 func main() {
 	app := fiber.New()
 
+	// Request Logging
+	app.Use(fiberzerolog.New(fiberzerolog.Config{
+		Logger: &util.RequestLogger,
+	}))
 	// CORS Configuration
 	corsConfig, err := util.GenerateCORSConfig()
 	if err != nil {
