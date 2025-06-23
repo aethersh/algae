@@ -48,7 +48,7 @@ func main() {
 		} else if name == "traceroute" {
 			component = templates.TraceroutePage(*sysinfo)
 		} else if name == "bgp" {
-	 		component = templates.BGPPage(*sysinfo)
+			component = templates.BGPPage(*sysinfo)
 		}
 
 		return util.TemplRender(c, component)
