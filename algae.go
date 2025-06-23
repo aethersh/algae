@@ -102,7 +102,7 @@ func main() {
 			return c.SendString(err.Error())
 		}
 
-		routeRespBytes, _, err := b.ShowRoute(cidr)
+		routeRespBytes, _, err := b.ShowRoute("full",cidr)
 		rRes := string(routeRespBytes)
 		
 		component := templates.CodeOutput(rRes)
