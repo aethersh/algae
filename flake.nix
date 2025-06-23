@@ -28,15 +28,14 @@
         ...
       }: rec  {
         # https://templ.guide/quick-start/installation#nix
-        # packages = rec {
-        #   default = pkgs.callPackage ./tungsten.nix {
-        #     inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
-        #     inherit pkl-go;
-        #   };
-        #   tungsten = default;
-        #   pkl-go = pkgs.callPackage ./pkl-gen-go.nix {
-        #   };
-        # };
+        packages = rec {
+          default = pkgs.callPackage ./algae.nix {
+            inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
+            inherit (inputs.templ.packages.${system}) templ;
+          };
+          algae = default;
+        
+        };
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
